@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Home School Web Browser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #browser {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+        }
+        #urlBar {
+            width: 70%;
+            margin-right: 10px;
+        }
+        #tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            cursor: pointer;
+        }
+        .tab.active {
+            background-color: #f0f0f0;
+        }
+        #checkInOut, #sessionNotes, #timeTracking, #dataSheet, #parentDashboard {
+            margin-top: 20px;
+        }
+        #noteInput, #dataInput {
+            width: 100%;
+            height: 100px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enhanced Home School Web Browser</h1>
+    
+    <div id="tabs">
+        <div class="tab active" onclick="switchTab(0)">Browser</div>
+        <div class="tab" onclick="switchTab(1)">Data Sheet</div>
+        <div class="tab" onclick="switchTab(2)">Parent Dashboard</div>
+    </div>
+    
+    <div id="browserTab" style="display: block;">
+        <div>
+            <input type="text" id="urlBar" placeholder="Enter URL">
+            <button onclick="loadPage()">Go</button>
+        </div>
+        
+        <iframe id="browser" src="about:blank"></iframe>
+        
+        <div id="checkInOut">
+            <h2>Check-In / Check-Out</h2>
+            <input type="text" id="userName" placeholder="User Name">
+            <button onclick="checkIn()">Check In</button>
+            <button onclick="checkOut()">Check Out</button>
+        </div>
+        
+        <div id="sessionNotes">
+            <h2>Session Notes</h2>
+            <textarea id="noteInput" placeholder="Enter session notes here..."></textarea>
+            <button onclick="saveNote()">Save Note</button>
+        </div>
+        
+        <div id="timeTracking">
+            <h2>Time Tracking</h2>
+            <p>Current session duration: <span id="sessionTime">00:00:00</span></p>
+        </div>
+    </div>
+    
+    <div id="dataSheetTab" style="display: none;">
+        <h2>Data Sheet</h2>
+        <div id="dataSheet">
+            <textarea id="dataInput" placeholder="Enter data sheet information here..."></textarea>
+            <button onclick="saveData()">Save Data</button>
+        </div>
+        <div id="dataDisplay"></div>
+    </div>
+    
+    <div id="parentDashboardTab" style="display: none;">
+        <h2>Parent Dashboard</h2>
+        <div id="parentDashboard">
+            <h3>Student Progress</h3>
+            <div id="progressChart"></div>
+            <h3>Time Sheet</h3>
+            <table id="timeSheet">
+                <tr>
+                    <th>Date</th>
+                    <th>Duration</th>
+                    <th>Activities</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div id="activityLog"></div>
+
+    <script>
+        let currentTab = 0;
+        let sessionStartTime;
+        let dataSheets = JSON.parse(localStorage.getItem('dataSheets')) || [];
+        let timeSheets = JSON.parse(localStorage.getItem('timeSheets')) || [];
+
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            document.querySelectorAll('.tab').forEach((tab, index) => {
+                tab.classList.toggle('active', index === currentTab);
+            });
+            document.getElementById('browserTab').style.display = tabIndex === 0 ? 'block' : 'none';
+            document.getElementById('dataSheetTab').style.display = tabIndex === 1 ? 'block' : 'none';
+            document.getElementById('parentDashboardTab').style.display = tabIndex === 2 ? 'block' : 'none';
+            
+            if (tabIndex === 1) {
+                updateDataDisplay();
+            } else if (tabIndex === 2) {
+                updateParentDashboard();
+            }
+        }
+
+        function loadPage() {
+            const url = document.getElementById('urlBar').value;
+            document.getElementById('browser').src = url;
+        }
+
+        function checkIn() {
+            const userName = document.getElementById('userName').value;
+            if (userName) {
+                const timestamp = new Date().toLocaleString();
+                const activity = `${userName} checked in at ${timestamp}`;
+                logActivity(activity);
+                sessionStartTime = new Date();
+                startTimeTracking();
+            } else {
+                alert('Please enter a user name');
+            }
+        }
+
+        function checkOut() {
+            const userName = document.getElementById('userName').value;
+            if (userName) {
+                const timestamp = new Date().toLocaleString();
+                const endTime = new Date();
+                const duration = (endTime - sessionStartTime) / 1000 / 60; // duration in minutes
+                const activity = `${userName} checked out at ${timestamp}`;
+                logActivity(activity);
+                stopTimeTracking();
+                
+                // Save to time sheet
+                timeSheets.push({
+                    date: timestamp,
+                    duration: duration.toFixed(2),
+                    activities: 'Web browsing and study'
+                });
+                localStorage.setItem('timeSheets', JSON.stringify(timeSheets));
+            } else {
+                alert('Please enter a user name');
+            }
+        }
+
+        function saveNote() {
+            const note = document.getElementById('noteInput').value;
+            if (note) {
+                const timestamp = new Date().toLocaleString();
+                const activity = `Note saved at ${timestamp}: ${note}`;
+                logActivity(activity);
+                document.getElementById('noteInput').value = '';
+            } else {
+                alert('Please enter a note');
+            }
+        }
+
+        function saveData() {
+            const data = document.getElementById('dataInput').value;
+            if (data) {
+                const timestamp = new Date().toLocaleString();
+                dataSheets.push({ timestamp, data });
+                localStorage.setItem('dataSheets', JSON.stringify(dataSheets));
+                updateDataDisplay();
+                document.getElementById('dataInput').value = '';
+            } else {
+                alert('Please enter data');
+            }
+        }
+
+        function updateDataDisplay() {
+            const displayElement = document.getElementById('dataDisplay');
+            displayElement.innerHTML = '<h3>Saved Data Sheets</h3>';
+            dataSheets.forEach((sheet, index) => {
+                displayElement.innerHTML += `<p><strong>${sheet.timestamp}</strong>: ${sheet.data}</p>`;
+            });
+        }
+
+        function updateParentDashboard() {
+            // Update progress chart (placeholder)
+            document.getElementById('progressChart').innerHTML = '<p>Progress chart placeholder</p>';
+            
+            // Update time sheet
+            const timeSheetElement = document.getElementById('timeSheet');
+            timeSheetElement.innerHTML = '<tr><th>Date</th><th>Duration (minutes)</th><th>Activities</th></tr>';
+            timeSheets.forEach(sheet => {
+                timeSheetElement.innerHTML += `<tr><td>${sheet.date}</td><td>${sheet.duration}</td><td>${sheet.activities}</td></tr>`;
+            });
+        }
+
+        function logActivity(activity) {
+            let activities = JSON.parse(localStorage.getItem('activities')) || [];
+            activities.push(activity);
+            localStorage.setItem('activities', JSON.stringify(activities));
+            updateActivityLog();
+        }
+
+        function updateActivityLog() {
+            const activities = JSON.parse(localStorage.getItem('activities')) || [];
+            const logElement = document.getElementById('activityLog');
+            logElement.innerHTML = '<h2>Activity Log</h2>';
+            activities.forEach(activity => {
+                logElement.innerHTML += `<p>${activity}</p>`;
+            });
+        }
+
+        function startTimeTracking() {
+            setInterval(updateSessionTime, 1000);
+        }
+
+        function stopTimeTracking() {
+            clearInterval(updateSessionTime);
+        }
+
+        function updateSessionTime() {
+            if (sessionStartTime) {
+                const currentTime = new Date();
+                const difference = currentTime - sessionStartTime;
+                const hours = Math.floor(difference / 3600000);
+                const minutes = Math.floor((difference % 3600000) / 60000);
+                const seconds = Math.floor((difference % 60000) / 1000);
+                document.getElementById('sessionTime').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Initialize on page load
+        updateActivityLog();
+        updateDataDisplay();
+        updateParentDashboard();
+    </script>
+</body>
+</html>
