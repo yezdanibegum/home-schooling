@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const attendeesRouter = require('./routes/attendees');
 const usersRouter = require('./routes/users');
+const timesheetsRouter = require('./routes/timesheets');
 
 const app = express();
 app.use(cors());
@@ -16,5 +17,6 @@ db.once('open', () => console.log('Connected to Database'));
 
 app.use('/attendees', attendeesRouter);
 app.use('/users', usersRouter);
+app.use('/timesheets', timesheetsRouter);
 
 app.listen(3000, () => console.log('Server Started'));
