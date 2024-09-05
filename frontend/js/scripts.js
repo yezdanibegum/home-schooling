@@ -1,4 +1,4 @@
-const apiUrl = 'http://localhost:3000/attendees';
+const apiUrl = 'https://home-schooling.onrender.com/attendees';
 
 async function fetchAttendees() {
     const response = await fetch(apiUrl);
