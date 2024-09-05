@@ -1,4 +1,4 @@
-const apiUrl = 'https://home-schooling.onrender.com/attendees';
+const apiUrl = '/api/attendees';
 
 async function fetchAttendees() {
     try {
