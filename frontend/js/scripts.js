@@ -1,4 +1,4 @@
-const apiUrl = 'http://localhost:3000/attendees';
+const apiUrl = 'https://home-schooling.onrender.com/attendees';
 
 async function fetchAttendees() {
     const response = await fetch(apiUrl);
@@ -67,5 +67,9 @@ async function addAttendee() {
 
 window.onload = function() {
     renderAttendanceList();
+    // Add event listener for the add attendee form
+    document.getElementById('addAttendeeForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        addAttendee();
+    });
 };
-
