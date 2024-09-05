@@ -1,12 +1,13 @@
-let attendees = [
-    { id: 1, name: "John Doe", email: "john@example.com", status: "Not Checked In" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", status: "Checked In" },
-    { id: 3, name: "Bob Johnson", email: "bob@example.com", status: "Not Checked In" },
-];
+const apiUrl = 'http://localhost:3000/attendees';
 
-const timesheet = [];
+async function fetchAttendees() {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    return data;
+}
 
-function renderAttendanceList() {
+async function renderAttendanceList() {
+    const attendees = await fetchAttendees();
     const attendanceItems = document.getElementById('attendanceItems');
     attendanceItems.innerHTML = '';
     attendees.forEach(attendee => {
@@ -16,7 +17,7 @@ function renderAttendanceList() {
             <img src="https://via.placeholder.com/40" alt="${attendee.name}">
             <span>${attendee.name}</span>
             <button class="checkButton ${attendee.status === 'Checked In' ? 'checkOutButton' : 'checkInButton'}" 
-                    onclick="toggleStatus(${attendee.id})">
+                    onclick="toggleStatus('${attendee._id}', '${attendee.status}')">
                 ${attendee.status === 'Checked In' ? 'Check Out' : 'Check In'}
             </button>
         `;
@@ -25,7 +26,7 @@ function renderAttendanceList() {
     });
 }
 
-function showProfile(attendee) {
+async function showProfile(attendee) {
     const profileDetails = document.getElementById('profileDetails');
     profileDetails.innerHTML = `
         <div class="profileHeader">
@@ -39,41 +40,31 @@ function showProfile(attendee) {
     `;
 }
 
-function toggleStatus(id) {
-    const attendee = attendees.find(a => a.id === id);
-    const currentTime = new Date();
-    if (attendee.status === 'Checked In') {
-        attendee.status = 'Not Checked In';
-        timesheet.push({ id: attendee.id, name: attendee.name, action: 'Check Out', time: currentTime });
-    } else {
-        attendee.status = 'Checked In';
-        timesheet.push({ id: attendee.id, name: attendee.name, action: 'Check In', time: currentTime });
-    }
+async function toggleStatus(id, currentStatus) {
+    const newStatus = currentStatus === 'Checked In' ? 'Not Checked In' : 'Checked In';
+    await fetch(`${apiUrl}/${id}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+    });
     renderAttendanceList();
-    showProfile(attendee);
-    saveData();
 }
 
-function addAttendee() {
+async function addAttendee() {
     const newName = document.getElementById('newName').value;
     const newEmail = document.getElementById('newEmail').value;
-    const newId = attendees.length + 1;
-    attendees.push({ id: newId, name: newName, email: newEmail, status: "Not Checked In" });
+    await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: newName, email: newEmail })
+    });
     renderAttendanceList();
-}
-
-function saveData() {
-    localStorage.setItem('attendees', JSON.stringify(attendees));
-}
-
-function loadData() {
-    const storedData = localStorage.getItem('attendees');
-    if (storedData) {
-        attendees = JSON.parse(storedData);
-    }
 }
 
 window.onload = function() {
-    loadData();
     renderAttendanceList();
 };
