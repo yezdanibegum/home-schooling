@@ -55,16 +55,4 @@ async function toggleStatus(id, currentStatus) {
 async function addAttendee() {
     const newName = document.getElementById('newName').value;
     const newEmail = document.getElementById('newEmail').value;
-    await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name: newName, email: newEmail })
-    });
-    renderAttendanceList();
-}
-
-window.onload = function() {
-    renderAttendanceList();
-};
+    await
