@@ -1,30 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Check-in/Check-out System</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-    <div class="container">
-        <div class="attendanceList">
-            <h1>Attendance Sheet</h1>
-            <input type="text" class="searchBar" placeholder="Search...">
-            <div id="attendanceItems"></div>
-            <form id="addAttendeeForm" class="addAttendeeForm">
-                <h2>Add New Attendee</h2>
-                <input type="text" id="newName" placeholder="Name" required>
-                <input type="email" id="newEmail" placeholder="Email" required>
-                <button type="submit">Add</button>
-            </form>
-        </div>
-        <div class="profileView">
-            <h1>Profile Details</h1>
-            <div id="profileDetails"></div>
-        </div>
-    </div>
-
-    <script src="js/scripts.js"></script>
-</body>
-</html>
+   <html lang="en">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Home Schooling Attendance</title>
+       <link rel="stylesheet" href="styles.css">
+   </head>
+   <body>
+       <div class="container">
+           <div class="attendanceList">
+               <h1>Attendance Sheet</h1>
+               <div id="attendanceItems"></div>
+               <h2>Add New Attendee</h2>
+               <form id="addAttendeeForm">
+                   <input type="text" id="newName" placeholder="Name" required>
+                   <input type="email" id="newEmail" placeholder="Email" required>
+                   <button type="submit">Add</button>
+               </form>
+           </div>
+           <div class="profileView">
+               <h1>Profile Details</h1>
+               <div id="profileDetails"></div>
+           </div>
+       </div>
+       <script src="scripts.js"></script>
+   </body>
+   </html>
