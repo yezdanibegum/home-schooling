@@ -1,3 +1,4 @@
+const apiUrl = 'https://home-schooling.onrender.com/attendees';
 require('dotenv').config();
    const express = require('express');
    const mongoose = require('mongoose');
@@ -5,6 +6,15 @@ require('dotenv').config();
    const attendeesRouter = require('./routes/attendees');
    const usersRouter = require('./routes/users');
    const timesheetsRouter = require('./routes/timesheets');
+
+
+async function fetchAttendees() {
+       const response = await fetch(apiUrl);
+       const data = await response.json();
+       return data;
+   }
+
+
 
    const app = express();
    app.use(cors());
