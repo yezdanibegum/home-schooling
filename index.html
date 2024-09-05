@@ -4,83 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Check-in/Check-out System</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
-        }
-        .container {
-            display: flex;
-            max-width: 1200px;
-            margin: 20px auto;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .attendanceList {
-            flex: 1;
-            padding: 20px;
-            border-right: 1px solid #e0e0e0;
-        }
-        .profileView {
-            flex: 1;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .searchBar {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .attendanceItem {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .attendanceItem img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .checkButton {
-            margin-left: auto;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .checkInButton {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .checkOutButton {
-            background-color: #f44336;
-            color: white;
-        }
-        .profileHeader {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .profileHeader img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin-right: 20px;
-        }
-        .profileDetails p {
-            margin: 5px 0;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="container">
@@ -88,6 +12,12 @@
             <h1>Attendance Sheet</h1>
             <input type="text" class="searchBar" placeholder="Search...">
             <div id="attendanceItems"></div>
+            <div class="addAttendeeForm">
+                <h2>Add New Attendee</h2>
+                <input type="text" id="newName" placeholder="Name">
+                <input type="email" id="newEmail" placeholder="Email">
+                <button onclick="addAttendee()">Add</button>
+            </div>
         </div>
         <div class="profileView">
             <h1>Profile Details</h1>
@@ -95,54 +25,6 @@
         </div>
     </div>
 
-    <script>
-        const attendees = [
-            { id: 1, name: "John Doe", email: "john@example.com", status: "Not Checked In" },
-            { id: 2, name: "Jane Smith", email: "jane@example.com", status: "Checked In" },
-            { id: 3, name: "Bob Johnson", email: "bob@example.com", status: "Not Checked In" },
-        ];
-
-        function renderAttendanceList() {
-            const attendanceItems = document.getElementById('attendanceItems');
-            attendanceItems.innerHTML = '';
-            attendees.forEach(attendee => {
-                const item = document.createElement('div');
-                item.className = 'attendanceItem';
-                item.innerHTML = `
-                    <img src="https://via.placeholder.com/40" alt="${attendee.name}">
-                    <span>${attendee.name}</span>
-                    <button class="checkButton ${attendee.status === 'Checked In' ? 'checkOutButton' : 'checkInButton'}" 
-                            onclick="toggleStatus(${attendee.id})">
-                        ${attendee.status === 'Checked In' ? 'Check Out' : 'Check In'}
-                    </button>
-                `;
-                item.onclick = () => showProfile(attendee);
-                attendanceItems.appendChild(item);
-            });
-        }
-
-        function showProfile(attendee) {
-            const profileDetails = document.getElementById('profileDetails');
-            profileDetails.innerHTML = `
-                <div class="profileHeader">
-                    <img src="https://via.placeholder.com/100" alt="${attendee.name}">
-                    <h2>${attendee.name}</h2>
-                </div>
-                <div class="profileDetails">
-                    <p><strong>Email:</strong> ${attendee.email}</p>
-                    <p><strong>Status:</strong> ${attendee.status}</p>
-                </div>
-            `;
-        }
-
-        function toggleStatus(id) {
-            const attendee = attendees.find(a => a.id === id);
-            attendee.status = attendee.status === 'Checked In' ? 'Not Checked In' : 'Checked In';
-            renderAttendanceList();
-            showProfile(attendee);
-        }
-
-        renderAttendanceList();
-    </script>
+    <script src="js/scripts.js"></script>
 </body>
 </html>
