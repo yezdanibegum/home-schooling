@@ -1,4 +1,3 @@
-const apiUrl = 'https://home-schooling.onrender.com/attendees';
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -8,7 +7,12 @@ const usersRouter = require('./routes/users');
 const timesheetsRouter = require('./routes/timesheets');
 
 const app = express();
-app.use(cors());
+
+// Update CORS settings
+app.use(cors({
+  origin: 'https://home-schooling.onrender.com'
+}));
+
 app.use(express.json());
 
 mongoose.connect(process.env.MONGODB_URI, {
@@ -16,7 +20,10 @@ mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
 })
 .then(() => console.log('Connected to Database'))
-.catch((error) => console.error('Database connection error:', error));
+.catch((error) => {
+  console.error('Database connection error:', error);
+  console.error('Error details:', JSON.stringify(error, null, 2));
+});
 
 app.get('/', (req, res) => {
   res.send('Home Schooling API');
